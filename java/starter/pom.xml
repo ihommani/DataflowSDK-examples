@@ -86,5 +86,10 @@
       <artifactId>slf4j-jdk14</artifactId>
       <version>1.7.14</version>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.18</version>
+    </dependency>
   </dependencies>
 </project>

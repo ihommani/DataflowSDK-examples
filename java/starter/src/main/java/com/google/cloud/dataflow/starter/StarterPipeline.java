@@ -17,6 +17,7 @@
  */
 package com.google.cloud.dataflow.starter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.Create;
@@ -43,9 +44,8 @@ import org.slf4j.LoggerFactory;
  *   --stagingLocation=<STAGING_LOCATION_IN_CLOUD_STORAGE>
  *   --runner=DataflowRunner
  */
+@Slf4j
 public class StarterPipeline {
-  private static final Logger LOG = LoggerFactory.getLogger(StarterPipeline.class);
-
   public static void main(String[] args) {
     Pipeline p = Pipeline.create(
         PipelineOptionsFactory.fromArgs(args).withValidation().create());
@@ -60,7 +60,7 @@ public class StarterPipeline {
     .apply(ParDo.of(new DoFn<String, Void>() {
       @ProcessElement
       public void processElement(ProcessContext c)  {
-        LOG.info(c.element());
+        log.info(c.element());
       }
     }));
 

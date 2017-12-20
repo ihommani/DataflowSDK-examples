@@ -18,6 +18,7 @@
 package com.google.cloud.dataflow.examples;
 
 import com.google.cloud.dataflow.examples.common.ExampleUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.PipelineOptions;
@@ -56,6 +57,7 @@ import org.apache.beam.sdk.values.KV;
  * "wordcounts-00001-of-00005. When running on a distributed service, you would use an appropriate
  * file service.
  */
+@Slf4j
 public class MinimalWordCount {
 
   public static void main(String[] args) {
@@ -86,6 +88,7 @@ public class MinimalWordCount {
                        public void processElement(ProcessContext c) {
                          for (String word : c.element().split(ExampleUtils.TOKENIZER_PATTERN)) {
                            if (!word.isEmpty()) {
+
                              c.output(word);
                            }
                          }
