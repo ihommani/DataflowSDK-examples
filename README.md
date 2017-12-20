@@ -8,16 +8,16 @@ Dataflow SDK](https://cloud.google.com/dataflow/model/programming-model) and dem
 ## Word Count
 
 A good starting point for new users is our set of
-word count ([java](java/examples/src/main/java/com/google/cloud/dataflow/examples), [python](python/dataflow_examples)) examples, which compute word frequencies.  This series of four successively more detailed pipelines is described in detail in the accompanying [walkthrough](https://beam.apache.org/get-started/wordcount-example/).
+word count ([java](java/examples/src/main/java/com/google/cloud/dataflow/examples)) examples, which compute word frequencies.  This series of four successively more detailed pipelines is described in detail in the accompanying [walkthrough](https://beam.apache.org/get-started/wordcount-example/).
 
-1. `MinimalWordCount`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/MinimalWordCount.java), [python](python/dataflow_examples/wordcount_minimal.py)) is the simplest word count pipeline and introduces basic concepts like [Pipelines](https://beam.apache.org/documentation/programming-guide/#pipeline),
+1. `MinimalWordCount`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/MinimalWordCount.java)) is the simplest word count pipeline and introduces basic concepts like [Pipelines](https://beam.apache.org/documentation/programming-guide/#pipeline),
 [PCollections](https://beam.apache.org/documentation/programming-guide/#pcollection),
 [ParDo](https://beam.apache.org/documentation/programming-guide/#transforms-pardo),
 and [reading and writing data](https://beam.apache.org/documentation/programming-guide/#io) from external storage.
 
-1. `WordCount`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/WordCount.java), [python](python/dataflow_examples/wordcount.py)) introduces Dataflow best practices like [PipelineOptions](https://beam.apache.org/documentation/programming-guide/#options) and custom [PTransforms](https://beam.apache.org/documentation/programming-guide/#transforms-composite).
+1. `WordCount`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/WordCount.java)) introduces Dataflow best practices like [PipelineOptions](https://beam.apache.org/documentation/programming-guide/#options) and custom [PTransforms](https://beam.apache.org/documentation/programming-guide/#transforms-composite).
 
-1. `DebuggingWordCount`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/DebuggingWordCount.java), [python](python/dataflow_examples/wordcount_debugging.py))
+1. `DebuggingWordCount`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/DebuggingWordCount.java))
 shows how to view live metrics in the [Dataflow Monitoring Interface](https://cloud.google.com/dataflow/pipelines/dataflow-monitoring-intf), get the most out of
 [Cloud Logging](https://cloud.google.com/dataflow/pipelines/logging) integration, and start writing
 [good tests](https://beam.apache.org/documentation/pipelines/test-your-pipeline/).
@@ -84,27 +84,12 @@ Note that when running Maven on Microsoft Windows platform, backslashes (`\`)
 under the `Dexec.args` parameter should be escaped with another backslash. For
 example, input file pattern of `c:\*.txt` should be entered as `c:\\*.txt`.
 
-### Python
-
-The examples in this repository can be built and executed from the `python`
-directory by running the following in a virtual environment:
-
-    python setup.py install
-
-This will use the latest release of the Cloud Dataflow SDK for Python pulled from the
-[PyPI](https://pypi.python.org/pypi/google-cloud-dataflow).
-
-For example, you can execute the `WordCount` pipeline on your local machine as follows:
-
-    python -m dataflow_examples.wordcount \
-    --inputFile=<LOCAL INPUT FILE> --output=<LOCAL OUTPUT FILE>
-
 ## Beyond Word Count
 
-After you've finished running your first few word count pipelines, take a look at the `cookbook`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/cookbook), [python](python/dataflow_examples/cookbook))
+After you've finished running your first few word count pipelines, take a look at the `cookbook`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/cookbook))
 directory for some common and useful patterns like joining, filtering, and combining.
 
-The `complete`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/complete), [python](python/dataflow_examples/complete))
+The `complete`([java](java/examples/src/main/java/com/google/cloud/dataflow/examples/complete))
 directory contains a few realistic end-to-end pipelines.
 
 ## Additional Resources
