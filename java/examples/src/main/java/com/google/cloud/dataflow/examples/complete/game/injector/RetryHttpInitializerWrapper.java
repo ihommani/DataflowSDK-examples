@@ -17,8 +17,6 @@
  */
 package com.google.cloud.dataflow.examples.complete.game.injector;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpBackOffIOExceptionHandler;
 import com.google.api.client.http.HttpBackOffUnsuccessfulResponseHandler;
@@ -28,8 +26,11 @@ import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpUnsuccessfulResponseHandler;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.client.util.Sleeper;
+
 import java.io.IOException;
 import java.util.logging.Logger;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * RetryHttpInitializerWrapper will automatically retry upon RPC
@@ -66,7 +67,7 @@ public class RetryHttpInitializerWrapper implements HttpRequestInitializer {
      * A constructor.
      *
      * @param wrappedCredential Credential which will be wrapped and
-     * used for providing auth header.
+     *                          used for providing auth header.
      */
     public RetryHttpInitializerWrapper(final Credential wrappedCredential) {
         this(wrappedCredential, Sleeper.DEFAULT);
@@ -76,8 +77,8 @@ public class RetryHttpInitializerWrapper implements HttpRequestInitializer {
      * A protected constructor only for testing.
      *
      * @param wrappedCredential Credential which will be wrapped and
-     * used for providing auth header.
-     * @param sleeper Sleeper for easy testing.
+     *                          used for providing auth header.
+     * @param sleeper           Sleeper for easy testing.
      */
     RetryHttpInitializerWrapper(
             final Credential wrappedCredential, final Sleeper sleeper) {

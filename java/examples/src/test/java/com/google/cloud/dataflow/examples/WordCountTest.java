@@ -17,8 +17,6 @@
  */
 package com.google.cloud.dataflow.examples;
 
-import java.util.Arrays;
-import java.util.List;
 import com.google.cloud.dataflow.examples.WordCount.CountWords;
 import com.google.cloud.dataflow.examples.WordCount.ExtractWordsFn;
 import com.google.cloud.dataflow.examples.WordCount.FormatAsTextFn;
@@ -39,48 +37,55 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Tests of WordCount.
  */
 @RunWith(JUnit4.class)
 public class WordCountTest {
 
-  /** Example test that tests a specific {@link DoFn}. */
-  @Test
-  public void testExtractWordsFn() throws Exception {
-    DoFnTester<String, String> extractWordsFn =
-        DoFnTester.of(new ExtractWordsFn());
+    /**
+     * Example test that tests a specific {@link DoFn}.
+     */
+    @Test
+    public void testExtractWordsFn() throws Exception {
+        DoFnTester<String, String> extractWordsFn =
+                DoFnTester.of(new ExtractWordsFn());
 
-    Assert.assertThat(extractWordsFn.processBundle(" some  input  words "),
-                      CoreMatchers.hasItems("some", "input", "words"));
-    Assert.assertThat(extractWordsFn.processBundle(" "),
-                      CoreMatchers.<String>hasItems());
-    Assert.assertThat(extractWordsFn.processBundle(" some ", " input", " words"),
-                      CoreMatchers.hasItems("some", "input", "words"));
-  }
+        Assert.assertThat(extractWordsFn.processBundle(" some  input  words "),
+                CoreMatchers.hasItems("some", "input", "words"));
+        Assert.assertThat(extractWordsFn.processBundle(" "),
+                CoreMatchers.<String>hasItems());
+        Assert.assertThat(extractWordsFn.processBundle(" some ", " input", " words"),
+                CoreMatchers.hasItems("some", "input", "words"));
+    }
 
-  static final String[] WORDS_ARRAY = new String[] {
-    "hi there", "hi", "hi sue bob",
-    "hi sue", "", "bob hi"};
+    static final String[] WORDS_ARRAY = new String[]{
+            "hi there", "hi", "hi sue bob",
+            "hi sue", "", "bob hi"};
 
-  static final List<String> WORDS = Arrays.asList(WORDS_ARRAY);
+    static final List<String> WORDS = Arrays.asList(WORDS_ARRAY);
 
-  static final String[] COUNTS_ARRAY = new String[] {
-      "hi: 5", "there: 1", "sue: 2", "bob: 2"};
+    static final String[] COUNTS_ARRAY = new String[]{
+            "hi: 5", "there: 1", "sue: 2", "bob: 2"};
 
-  @Rule
-  public TestPipeline p = TestPipeline.create();
+    @Rule
+    public TestPipeline p = TestPipeline.create();
 
-  /** Example test that tests a PTransform by using an in-memory input and inspecting the output. */
-  @Test
-  @Category(ValidatesRunner.class)
-  public void testCountWords() throws Exception {
-    PCollection<String> input = p.apply(Create.of(WORDS).withCoder(StringUtf8Coder.of()));
+    /**
+     * Example test that tests a PTransform by using an in-memory input and inspecting the output.
+     */
+    @Test
+    @Category(ValidatesRunner.class)
+    public void testCountWords() throws Exception {
+        PCollection<String> input = p.apply(Create.of(WORDS).withCoder(StringUtf8Coder.of()));
 
-    PCollection<String> output = input.apply(new CountWords())
-      .apply(MapElements.via(new FormatAsTextFn()));
+        PCollection<String> output = input.apply(new CountWords())
+                .apply(MapElements.via(new FormatAsTextFn()));
 
-    PAssert.that(output).containsInAnyOrder(COUNTS_ARRAY);
-    p.run().waitUntilFinish();
-  }
+        PAssert.that(output).containsInAnyOrder(COUNTS_ARRAY);
+        p.run().waitUntilFinish();
+    }
 }

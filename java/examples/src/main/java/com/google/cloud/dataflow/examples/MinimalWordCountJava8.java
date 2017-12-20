@@ -17,7 +17,6 @@
  */
 package com.google.cloud.dataflow.examples;
 
-import java.util.Arrays;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.PipelineOptions;
@@ -29,44 +28,46 @@ import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.TypeDescriptors;
 
+import java.util.Arrays;
+
 /**
  * An example that counts words in Shakespeare, using Java 8 language features.
- *
+ * <p>
  * <p>See {@link MinimalWordCount} for a comprehensive explanation.
  */
 public class MinimalWordCountJava8 {
 
-  public static void main(String[] args) {
-    PipelineOptions options = PipelineOptionsFactory.create();
-    // In order to run your pipeline, you need to make following runner specific changes:
-    //
-    // CHANGE 1/3: Select a Beam runner, such as BlockingDataflowRunner
-    // or FlinkRunner.
-    // CHANGE 2/3: Specify runner-required options.
-    // For BlockingDataflowRunner, set project and temp location as follows:
-    //   DataflowPipelineOptions dataflowOptions = options.as(DataflowPipelineOptions.class);
-    //   dataflowOptions.setRunner(BlockingDataflowRunner.class);
-    //   dataflowOptions.setProject("SET_YOUR_PROJECT_ID_HERE");
-    //   dataflowOptions.setTempLocation("gs://SET_YOUR_BUCKET_NAME_HERE/AND_TEMP_DIRECTORY");
-    // For FlinkRunner, set the runner as follows. See {@code FlinkPipelineOptions}
-    // for more details.
-    //   options.as(FlinkPipelineOptions.class)
-    //      .setRunner(FlinkRunner.class);
+    public static void main(String[] args) {
+        PipelineOptions options = PipelineOptionsFactory.create();
+        // In order to run your pipeline, you need to make following runner specific changes:
+        //
+        // CHANGE 1/3: Select a Beam runner, such as BlockingDataflowRunner
+        // or FlinkRunner.
+        // CHANGE 2/3: Specify runner-required options.
+        // For BlockingDataflowRunner, set project and temp location as follows:
+        //   DataflowPipelineOptions dataflowOptions = options.as(DataflowPipelineOptions.class);
+        //   dataflowOptions.setRunner(BlockingDataflowRunner.class);
+        //   dataflowOptions.setProject("SET_YOUR_PROJECT_ID_HERE");
+        //   dataflowOptions.setTempLocation("gs://SET_YOUR_BUCKET_NAME_HERE/AND_TEMP_DIRECTORY");
+        // For FlinkRunner, set the runner as follows. See {@code FlinkPipelineOptions}
+        // for more details.
+        //   options.as(FlinkPipelineOptions.class)
+        //      .setRunner(FlinkRunner.class);
 
-    Pipeline p = Pipeline.create(options);
+        Pipeline p = Pipeline.create(options);
 
-    p.apply(TextIO.read().from("gs://apache-beam-samples/shakespeare/*"))
-     .apply(FlatMapElements
-         .into(TypeDescriptors.strings())
-         .via((String word) -> Arrays.asList(word.split("[^\\p{L}]+"))))
-     .apply(Filter.by((String word) -> !word.isEmpty()))
-     .apply(Count.<String>perElement())
-     .apply(MapElements
-         .into(TypeDescriptors.strings())
-         .via((KV<String, Long> wordCount) -> wordCount.getKey() + ": " + wordCount.getValue()))
-     // CHANGE 3/3: The Google Cloud Storage path is required for outputting the results to.
-     .apply(TextIO.write().to("gs://YOUR_OUTPUT_BUCKET/AND_OUTPUT_PREFIX"));
+        p.apply(TextIO.read().from("gs://apache-beam-samples/shakespeare/*"))
+                .apply(FlatMapElements
+                        .into(TypeDescriptors.strings())
+                        .via((String word) -> Arrays.asList(word.split("[^\\p{L}]+"))))
+                .apply(Filter.by((String word) -> !word.isEmpty()))
+                .apply(Count.<String>perElement())
+                .apply(MapElements
+                        .into(TypeDescriptors.strings())
+                        .via((KV<String, Long> wordCount) -> wordCount.getKey() + ": " + wordCount.getValue()))
+                // CHANGE 3/3: The Google Cloud Storage path is required for outputting the results to.
+                .apply(TextIO.write().to("gs://YOUR_OUTPUT_BUCKET/AND_OUTPUT_PREFIX"));
 
-    p.run().waitUntilFinish();
-  }
+        p.run().waitUntilFinish();
+    }
 }

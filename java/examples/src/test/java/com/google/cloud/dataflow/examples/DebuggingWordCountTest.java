@@ -17,10 +17,8 @@
  */
 package com.google.cloud.dataflow.examples;
 
-import com.google.common.io.Files;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
 import com.google.cloud.dataflow.examples.DebuggingWordCount.WordCountOptions;
+import com.google.common.io.Files;
 import org.apache.beam.sdk.testing.TestPipeline;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,25 +26,29 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+
 /**
  * Tests for {@link DebuggingWordCount}.
  */
 @RunWith(JUnit4.class)
 public class DebuggingWordCountTest {
-  @Rule public TemporaryFolder tmpFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-  @Test
-  public void testDebuggingWordCount() throws Exception {
-    File inputFile = tmpFolder.newFile();
-    File outputFile = tmpFolder.newFile();
-    Files.write(
-        "stomach secret Flourish message Flourish here Flourish",
-        inputFile,
-        StandardCharsets.UTF_8);
-    WordCountOptions options =
-        TestPipeline.testingPipelineOptions().as(WordCountOptions.class);
-    options.setInputFile(inputFile.getAbsolutePath());
-    options.setOutput(outputFile.getAbsolutePath());
-    DebuggingWordCount.main(TestPipeline.convertToArgs(options));
-  }
+    @Test
+    public void testDebuggingWordCount() throws Exception {
+        File inputFile = tmpFolder.newFile();
+        File outputFile = tmpFolder.newFile();
+        Files.write(
+                "stomach secret Flourish message Flourish here Flourish",
+                inputFile,
+                StandardCharsets.UTF_8);
+        WordCountOptions options =
+                TestPipeline.testingPipelineOptions().as(WordCountOptions.class);
+        options.setInputFile(inputFile.getAbsolutePath());
+        options.setOutput(outputFile.getAbsolutePath());
+        DebuggingWordCount.main(TestPipeline.convertToArgs(options));
+    }
 }

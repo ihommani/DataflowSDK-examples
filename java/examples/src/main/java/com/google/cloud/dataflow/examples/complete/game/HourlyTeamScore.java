@@ -17,9 +17,6 @@
  */
 package com.google.cloud.dataflow.examples.complete.game;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
 import com.google.cloud.dataflow.examples.complete.game.utils.WriteToText;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
@@ -39,11 +36,15 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
+
 /**
  * This class is the second in a series of four pipelines that tell a story in a 'gaming'
  * domain, following {@link UserScore}. In addition to the concepts introduced in {@link UserScore},
  * new concepts include: windowing and element timestamps; use of {@code Filter.by()}.
- *
+ * <p>
  * <p>This pipeline processes data collected from gaming events in batch, building on {@link
  * UserScore} but using fixed windows. It calculates the sum of scores per team, for each window,
  * optionally allowing specification of two timestamps before and after which data is filtered out.
@@ -52,7 +53,7 @@ import org.joda.time.format.DateTimeFormatter;
  * By using windowing and adding element timestamps, we can do finer-grained analysis than with the
  * {@link UserScore} pipeline. However, our batch processing is high-latency, in that we don't get
  * results from plays at the beginning of the batch's time period until the batch is processed.
- *
+ * <p>
  * <p>To execute this pipeline, specify the pipeline configuration like this:
  * <pre>{@code
  *   --tempLocation=YOUR_TEMP_DIRECTORY
@@ -61,7 +62,7 @@ import org.joda.time.format.DateTimeFormatter;
  *   (possibly options specific to your runner or permissions for your temp/output locations)
  * }
  * </pre>
- *
+ * <p>
  * <p>Optionally include {@code --input} to specify the batch input file path.
  * To indicate a time after which the data should be filtered out, include the
  * {@code --stopMin} arg. E.g., {@code --stopMin=2015-10-18-23-59} indicates that any data
@@ -73,110 +74,113 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public class HourlyTeamScore extends UserScore {
 
-  private static DateTimeFormatter fmt =
-      DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS")
-          .withZone(DateTimeZone.forTimeZone(TimeZone.getTimeZone("PST")));
-  private static DateTimeFormatter minFmt =
-      DateTimeFormat.forPattern("yyyy-MM-dd-HH-mm")
-          .withZone(DateTimeZone.forTimeZone(TimeZone.getTimeZone("PST")));
+    private static DateTimeFormatter fmt =
+            DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS")
+                    .withZone(DateTimeZone.forTimeZone(TimeZone.getTimeZone("PST")));
+    private static DateTimeFormatter minFmt =
+            DateTimeFormat.forPattern("yyyy-MM-dd-HH-mm")
+                    .withZone(DateTimeZone.forTimeZone(TimeZone.getTimeZone("PST")));
 
 
-  /**
-   * Options supported by {@link HourlyTeamScore}.
-   */
-  interface Options extends UserScore.Options {
+    /**
+     * Options supported by {@link HourlyTeamScore}.
+     */
+    interface Options extends UserScore.Options {
 
-    @Description("Numeric value of fixed window duration, in minutes")
-    @Default.Integer(60)
-    Integer getWindowDuration();
-    void setWindowDuration(Integer value);
+        @Description("Numeric value of fixed window duration, in minutes")
+        @Default.Integer(60)
+        Integer getWindowDuration();
 
-    @Description("String representation of the first minute after which to generate results,"
-        + "in the format: yyyy-MM-dd-HH-mm . This time should be in PST."
-        + "Any input data timestamped prior to that minute won't be included in the sums.")
-    @Default.String("1970-01-01-00-00")
-    String getStartMin();
-    void setStartMin(String value);
+        void setWindowDuration(Integer value);
 
-    @Description("String representation of the first minute for which to not generate results,"
-        + "in the format: yyyy-MM-dd-HH-mm . This time should be in PST."
-        + "Any input data timestamped after that minute won't be included in the sums.")
-    @Default.String("2100-01-01-00-00")
-    String getStopMin();
-    void setStopMin(String value);
-  }
+        @Description("String representation of the first minute after which to generate results,"
+                + "in the format: yyyy-MM-dd-HH-mm . This time should be in PST."
+                + "Any input data timestamped prior to that minute won't be included in the sums.")
+        @Default.String("1970-01-01-00-00")
+        String getStartMin();
 
-  /**
-   * Create a map of information that describes how to write pipeline output to text. This map
-   * is passed to the {@link WriteToText} constructor to write team score sums and
-   * includes information about window start time.
-   */
-  protected static Map<String, WriteToText.FieldFn<KV<String, Integer>>>
-      configureOutput() {
-    Map<String, WriteToText.FieldFn<KV<String, Integer>>> config =
-        new HashMap<String, WriteToText.FieldFn<KV<String, Integer>>>();
-    config.put("team", (c, w) -> c.element().getKey());
-    config.put("total_score", (c, w) -> c.element().getValue());
-    config.put(
-        "window_start",
-        (c, w) -> {
-              IntervalWindow window = (IntervalWindow) w;
-              return fmt.print(window.start());
-            });
-    return config;
-  }
+        void setStartMin(String value);
+
+        @Description("String representation of the first minute for which to not generate results,"
+                + "in the format: yyyy-MM-dd-HH-mm . This time should be in PST."
+                + "Any input data timestamped after that minute won't be included in the sums.")
+        @Default.String("2100-01-01-00-00")
+        String getStopMin();
+
+        void setStopMin(String value);
+    }
+
+    /**
+     * Create a map of information that describes how to write pipeline output to text. This map
+     * is passed to the {@link WriteToText} constructor to write team score sums and
+     * includes information about window start time.
+     */
+    protected static Map<String, WriteToText.FieldFn<KV<String, Integer>>>
+    configureOutput() {
+        Map<String, WriteToText.FieldFn<KV<String, Integer>>> config =
+                new HashMap<String, WriteToText.FieldFn<KV<String, Integer>>>();
+        config.put("team", (c, w) -> c.element().getKey());
+        config.put("total_score", (c, w) -> c.element().getValue());
+        config.put(
+                "window_start",
+                (c, w) -> {
+                    IntervalWindow window = (IntervalWindow) w;
+                    return fmt.print(window.start());
+                });
+        return config;
+    }
 
 
-  /**
-   * Run a batch pipeline to do windowed analysis of the data.
-   */
-  // [START DocInclude_HTSMain]
-  public static void main(String[] args) throws Exception {
-    // Begin constructing a pipeline configured by commandline flags.
-    Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
-    Pipeline pipeline = Pipeline.create(options);
+    /**
+     * Run a batch pipeline to do windowed analysis of the data.
+     */
+    // [START DocInclude_HTSMain]
+    public static void main(String[] args) throws Exception {
+        // Begin constructing a pipeline configured by commandline flags.
+        Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
+        Pipeline pipeline = Pipeline.create(options);
 
-    final Instant stopMinTimestamp = new Instant(minFmt.parseMillis(options.getStopMin()));
-    final Instant startMinTimestamp = new Instant(minFmt.parseMillis(options.getStartMin()));
+        final Instant stopMinTimestamp = new Instant(minFmt.parseMillis(options.getStopMin()));
+        final Instant startMinTimestamp = new Instant(minFmt.parseMillis(options.getStartMin()));
 
-    // Read 'gaming' events from a text file.
-    pipeline.apply(TextIO.read().from(options.getInput()))
-      // Parse the incoming data.
-      .apply("ParseGameEvent", ParDo.of(new ParseEventFn()))
+        // Read 'gaming' events from a text file.
+        pipeline.apply(TextIO.read().from(options.getInput()))
+                // Parse the incoming data.
+                .apply("ParseGameEvent", ParDo.of(new ParseEventFn()))
 
-      // Filter out data before and after the given times so that it is not included
-      // in the calculations. As we collect data in batches (say, by day), the batch for the day
-      // that we want to analyze could potentially include some late-arriving data from the previous
-      // day. If so, we want to weed it out. Similarly, if we include data from the following day
-      // (to scoop up late-arriving events from the day we're analyzing), we need to weed out events
-      // that fall after the time period we want to analyze.
-      // [START DocInclude_HTSFilters]
-      .apply("FilterStartTime", Filter.by(
-          (GameActionInfo gInfo)
-              -> gInfo.getTimestamp() > startMinTimestamp.getMillis()))
-      .apply("FilterEndTime", Filter.by(
-          (GameActionInfo gInfo)
-              -> gInfo.getTimestamp() < stopMinTimestamp.getMillis()))
-      // [END DocInclude_HTSFilters]
+                // Filter out data before and after the given times so that it is not included
+                // in the calculations. As we collect data in batches (say, by day), the batch for the day
+                // that we want to analyze could potentially include some late-arriving data from the previous
+                // day. If so, we want to weed it out. Similarly, if we include data from the following day
+                // (to scoop up late-arriving events from the day we're analyzing), we need to weed out events
+                // that fall after the time period we want to analyze.
+                // [START DocInclude_HTSFilters]
+                .apply("FilterStartTime", Filter.by(
+                        (GameActionInfo gInfo)
+                                -> gInfo.getTimestamp() > startMinTimestamp.getMillis()))
+                .apply("FilterEndTime", Filter.by(
+                        (GameActionInfo gInfo)
+                                -> gInfo.getTimestamp() < stopMinTimestamp.getMillis()))
+                // [END DocInclude_HTSFilters]
 
-      // [START DocInclude_HTSAddTsAndWindow]
-      // Add an element timestamp based on the event log, and apply fixed windowing.
-      .apply("AddEventTimestamps",
-             WithTimestamps.of((GameActionInfo i) -> new Instant(i.getTimestamp())))
-      .apply("FixedWindowsTeam", Window.<GameActionInfo>into(
-          FixedWindows.of(Duration.standardMinutes(options.getWindowDuration()))))
-      // [END DocInclude_HTSAddTsAndWindow]
+                // [START DocInclude_HTSAddTsAndWindow]
+                // Add an element timestamp based on the event log, and apply fixed windowing.
+                .apply("AddEventTimestamps",
+                        WithTimestamps.of((GameActionInfo i) -> new Instant(i.getTimestamp())))
+                .apply("FixedWindowsTeam", Window.<GameActionInfo>into(
+                        FixedWindows.of(Duration.standardMinutes(options.getWindowDuration()))))
+                // [END DocInclude_HTSAddTsAndWindow]
 
-      // Extract and sum teamname/score pairs from the event data.
-      .apply("ExtractTeamScore", new ExtractAndSumScore("team"))
-      .apply("WriteTeamScoreSums",
-          new WriteToText<KV<String, Integer>>(
-              options.getOutput(),
-              configureOutput(),
-              true));
+                // Extract and sum teamname/score pairs from the event data.
+                .apply("ExtractTeamScore", new ExtractAndSumScore("team"))
+                .apply("WriteTeamScoreSums",
+                        new WriteToText<KV<String, Integer>>(
+                                options.getOutput(),
+                                configureOutput(),
+                                true));
 
-    pipeline.run().waitUntilFinish();
-  }
-  // [END DocInclude_HTSMain]
+        pipeline.run().waitUntilFinish();
+    }
+    // [END DocInclude_HTSMain]
 
 }
